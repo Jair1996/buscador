@@ -54,76 +54,6 @@ const llenarSelect = () => {
   }
 };
 
-const filtrarMarca = (auto) => {
-  const { marca } = datosBusqueda;
-
-  if (marca) {
-    return auto.marca === marca;
-  }
-
-  return auto;
-};
-
-const filtrarYear = (auto) => {
-  const { year } = datosBusqueda;
-
-  if (year) {
-    return auto.year === year;
-  }
-
-  return auto;
-};
-
-const filtrarMinimo = (auto) => {
-  const { minimo } = datosBusqueda;
-
-  if (minimo) {
-    return auto.precio >= minimo;
-  }
-
-  return auto;
-};
-
-const filtrarMaximo = (auto) => {
-  const { maximo } = datosBusqueda;
-
-  if (maximo) {
-    return auto.precio <= maximo;
-  }
-
-  return auto;
-};
-
-const filtrarPuerta = (auto) => {
-  const { puertas } = datosBusqueda;
-
-  if (puertas) {
-    return auto.puertas === puertas;
-  }
-
-  return auto;
-};
-
-const filtrarTransmision = (auto) => {
-  const { transmision } = datosBusqueda;
-
-  if (transmision) {
-    return auto.transmision === transmision;
-  }
-
-  return auto;
-};
-
-const filtrarColor = (auto) => {
-  const { color } = datosBusqueda;
-
-  if (color) {
-    return auto.color === color;
-  }
-
-  return auto;
-};
-
 const noResultado = () => {
   limpiarHTML();
 
@@ -136,15 +66,35 @@ const noResultado = () => {
   resultado.appendChild(noResultado);
 };
 
+const filterByFeature = (auto, feature) => {
+  if (datosBusqueda[`${feature}`]) {
+    if (feature === "minimo" || feature === "maximo") {
+      if (feature === "minimo") {
+        return auto.precio >= datosBusqueda[`${feature}`];
+      }
+
+      if (feature === "maximo") {
+        return auto.precio <= datosBusqueda[`${feature}`];
+      }
+    } else {
+      if (datosBusqueda[`${feature}`]) {
+        return auto[`${feature}`] === datosBusqueda[`${feature}`];
+      }
+    }
+  }
+
+  return auto;
+};
+
 const filtrarAuto = () => {
   const resultado = autos
-    .filter(filtrarMarca)
-    .filter(filtrarYear)
-    .filter(filtrarMinimo)
-    .filter(filtrarMaximo)
-    .filter(filtrarPuerta)
-    .filter(filtrarTransmision)
-    .filter(filtrarColor);
+    .filter((auto) => filterByFeature(auto, "marca"))
+    .filter((auto) => filterByFeature(auto, "year"))
+    .filter((auto) => filterByFeature(auto, "minimo"))
+    .filter((auto) => filterByFeature(auto, "maximo"))
+    .filter((auto) => filterByFeature(auto, "puertas"))
+    .filter((auto) => filterByFeature(auto, "transmision"))
+    .filter((auto) => filterByFeature(auto, "color"));
 
   if (resultado.length) {
     mostrarAutos(resultado);
